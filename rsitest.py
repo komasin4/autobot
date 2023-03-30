@@ -16,8 +16,8 @@ while True:
         secret = strParse[1]
 f.close()
 
-print (access)
-print (secret)
+#print (access)
+#print (secret)
 
 upbit = pyupbit.Upbit(access, secret)  # 업비트 객체를 만듭니다.
 
@@ -89,41 +89,36 @@ def Monitor():
     rsi_pre = float(GetRSI(df, 10).iloc[-2])
     rsi_now = float(GetRSI(df, 10).iloc[-1])
 
+    addString = ""
+    now_price = df["close"].iloc[-1]
+
     if(rsi_pre_old != rsi_pre):
         print("changed ", rsi_pre_old, "->",
               rsi_pre, "->", rsi_now, "\t", trade)
         rsi_pre_old = rsi_pre
         trade = 'N'
+        #봉 완성시만 매매 하도록 수정
+        if (rsi_now > 70 and rsi_pre <= 70 and trade == 'N'):
+            sell_cnt = round(getAmount("SELL") / now_price, 8)
+            print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
+            addString = "\tsell - golden cross!!!"
+            trade = 'Y'
+        elif (rsi_now <= 70 and rsi_pre > 70 and trade == 'N'):
+            sell_cnt = round(getAmount("SELL") / now_price, 8)
+            print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
+            addString = "\tsell - dead cross!!!"
+            trade = 'Y'
+        elif (rsi_now >= 30 and rsi_pre < 30 and trade == 'N'):
+            buy_cnt = round(getAmount("BUY") / now_price, 8)
+            print(upbit.buy_limit_order("KRW-BTC", now_price+price_unit, buy_cnt))
+            addString = "\tbuy - golden cross!!!"
+            trade = 'Y'
     else:
         print("nochnage ", rsi_pre_old, "->",
               rsi_pre, "->", rsi_now, "\t", trade)
 
-    addString = ""
-
-    now_price = df["close"].iloc[-1]
-
-    #print(getAmount("SELL"), ":", now_price, ":", round(getAmount("SELL") / now_price, 8))
-    #print(getAmount("BUY"), ":", now_price, ":", round(getAmount("BUY") / now_price, 8))
-
-    if (rsi_now > 70 and rsi_pre <= 70 and trade == 'N'):
-        sell_cnt = round(getAmount("SELL") / now_price, 8)
-        print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
-        addString = "\tsell - golden cross!!!"
-        trade = 'Y'
-    elif (rsi_now <= 70 and rsi_pre > 70 and trade == 'N'):
-        sell_cnt = round(getAmount("SELL") / now_price, 8)
-        print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
-        addString = "\tsell - dead cross!!!"
-        trade = 'Y'
-    elif (rsi_now >= 30 and rsi_pre < 30 and trade == 'N'):
-        buy_cnt = round(getAmount("BUY") / now_price, 8)
-        print(upbit.buy_limit_order("KRW-BTC", now_price+price_unit, buy_cnt))
-        addString = "\tbuy - golden cross!!!"
-        trade = 'Y'
-
     print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'),
           rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, "\t", now_price, addString, flush=True)
-
 
 print("Start Bot at ", datetime.now(
     timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'))
