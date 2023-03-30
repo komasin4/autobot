@@ -94,25 +94,21 @@ def Monitor():
     
     now_price = df["close"].iloc[-1]
 
-    if(rsi_pre_old != rsi_pre):
+    if(rsi_pre_old != rsi_pre && rsi_pre_old > 0):
         rsiChangeString = "change:Y traded:" + trade
         trade = 'N'
-        #봉 완성시만 매매 하도록 수정
-        #if (rsi_now > 70 and rsi_pre <= 70 and trade == 'N'):
         if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N'):
             sell_cnt = round(getAmount("SELL") / now_price, 8)
             print(upbit.sell_limit_order(
                 "KRW-BTC", now_price-price_unit, sell_cnt))
             addString = "\tsell - golden cross!!!"
             trade = 'Y'
-        #elif (rsi_now <= 70 and rsi_pre > 70 and trade == 'N'):
         elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N'):
             sell_cnt = round(getAmount("SELL") / now_price, 8)
             print(upbit.sell_limit_order(
                 "KRW-BTC", now_price-price_unit, sell_cnt))
             addString = "\tsell - dead cross!!!"
             trade = 'Y'
-        #elif (rsi_now >= 30 and rsi_pre < 30 and trade == 'N'):
         elif (rsi_pre >= 30 and rsi_pre_old < 30 and trade == 'N'):
             buy_cnt = round(getAmount("BUY") / now_price, 8)
             print(upbit.buy_limit_order("KRW-BTC", now_price+price_unit, buy_cnt))
