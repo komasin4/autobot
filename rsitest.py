@@ -91,6 +91,7 @@ def Monitor():
 
     addString = ""
     rsiChangeString = ""
+    rsiChange = False
     
     now_price = df["close"].iloc[-1]
 
@@ -115,13 +116,19 @@ def Monitor():
             addString = "\tbuy - golden cross!!!"
             trade = 'Y'
         rsi_pre_old = rsi_pre
+        rsiChange = True
     elif(rsi_pre_old == 0): #최초 실행시는 rsi_pre_old = rsi_pre 어사인.
         rsi_pre_old = rsi_pre
+        rsiChangeString = "change:N traded:" + trade
+        rsiChange = False
     else:
         rsiChangeString = "change:N traded:" + trade
+        rsiChange = False
  
-    print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S '),
-          rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, now_price, rsiChangeString, addString, flush=True)
+    if(rsiChange == True):
+        print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S '),
+            rsi_pre_old2, "->", rsi_pre, "->", rsi_now, now_price, addString, flush=True)
+            #rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, now_price, rsiChangeString, addString, flush=True)
 
 
 print("Start Bot at ", datetime.now(
@@ -131,6 +138,6 @@ print("Start Bot at ", datetime.now(
 
 while 1:
     Monitor()
-    time.sleep(5)
+    time.sleep(3)
 # comment:
 # end while True:
