@@ -16,8 +16,8 @@ while True:
         secret = strParse[1]
 f.close()
 
-print(access)
-print(secret)
+#print(access)
+#print(secret)
 
 upbit = pyupbit.Upbit(access, secret)  # 업비트 객체를 만듭니다.
 
@@ -132,7 +132,7 @@ def Monitor():
 
 
 print("Start Bot at ", datetime.now(
-    timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'))
+    timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'), flush=True)
 
 #Monitor()
 
