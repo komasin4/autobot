@@ -94,7 +94,7 @@ def Monitor():
     
     now_price = df["close"].iloc[-1]
 
-    if(rsi_pre_old != rsi_pre && rsi_pre_old > 0):
+    if(rsi_pre_old != rsi_pre and rsi_pre_old > 0):
         rsiChangeString = "change:Y traded:" + trade
         trade = 'N'
         if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N'):
