@@ -16,8 +16,8 @@ while True:
         secret = strParse[1]
 f.close()
 
-#print (access)
-#print (secret)
+print(access)
+print(secret)
 
 upbit = pyupbit.Upbit(access, secret)  # 업비트 객체를 만듭니다.
 
@@ -90,23 +90,26 @@ def Monitor():
     rsi_now = float(GetRSI(df, 10).iloc[-1])
 
     addString = ""
+    rsiChangeString = ""
+    
     now_price = df["close"].iloc[-1]
 
     if(rsi_pre_old != rsi_pre):
-        print("changed ", rsi_pre_old, "->",
-              rsi_pre, "->", rsi_now, "\t", trade)
+        rsiChangeString = "change:Y traded:" + trade
         trade = 'N'
         #봉 완성시만 매매 하도록 수정
         #if (rsi_now > 70 and rsi_pre <= 70 and trade == 'N'):
         if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N'):
             sell_cnt = round(getAmount("SELL") / now_price, 8)
-            print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
+            print(upbit.sell_limit_order(
+                "KRW-BTC", now_price-price_unit, sell_cnt))
             addString = "\tsell - golden cross!!!"
             trade = 'Y'
         #elif (rsi_now <= 70 and rsi_pre > 70 and trade == 'N'):
         elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N'):
             sell_cnt = round(getAmount("SELL") / now_price, 8)
-            print(upbit.sell_limit_order("KRW-BTC", now_price-price_unit, sell_cnt))
+            print(upbit.sell_limit_order(
+                "KRW-BTC", now_price-price_unit, sell_cnt))
             addString = "\tsell - dead cross!!!"
             trade = 'Y'
         #elif (rsi_now >= 30 and rsi_pre < 30 and trade == 'N'):
@@ -117,11 +120,11 @@ def Monitor():
             trade = 'Y'
         rsi_pre_old = rsi_pre
     else:
-        print("nochnage ", rsi_pre_old, "->",
-              rsi_pre, "->", rsi_now, "\t", trade)
+        rsiChangeString = "change:N traded:" + trade
+ 
+    print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S '),
+          rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, now_price, rsiChangeString, addString, flush=True)
 
-    print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'),
-          rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, "\t", now_price, addString, flush=True)
 
 print("Start Bot at ", datetime.now(
     timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S\t'))
