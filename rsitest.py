@@ -143,7 +143,7 @@ def Monitor():
             print(upbit.buy_limit_order("KRW-BTC", order, cnt))
             addString = "buy - golden cross!!!"
             trade = 'Y'
-        if(sendMsg != ""):
+        if(trade == 'Y'):
             print(sendMsg)
             sendMsg = addString + str(order) + ":" + str(cnt) + ":" + str(order*cnt)
             telegram_send(token, chatid, sendMsg)
