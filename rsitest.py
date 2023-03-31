@@ -158,8 +158,8 @@ def Monitor():
         rsiChange = False
  
     if(rsiChange == True):
-        print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S '),
-            rsi_pre_old2, "\t", rsi_pre, "\t", rsi_now, "\t", now_price, addString, flush=True)
+        print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S'),
+              f"{rsi_pre_old2:.10f}", f"{rsi_pre:.10f}", f"{rsi_now: .10f}", now_price, addString, flush=True)
             #rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, now_price, rsiChangeString, addString, flush=True)
 
 print("Start Bot at ", datetime.now(
