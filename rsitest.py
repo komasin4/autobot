@@ -17,7 +17,7 @@ trade = 'N'
 price_unit = 5000
 
 #key값을 읽어옴
-f = open("key.txt", 'r')
+f = open("./key/key.txt", 'r')
 while True:
     line = f.readline()
     if not line:
