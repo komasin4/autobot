@@ -3,23 +3,8 @@ import pandas as pd
 import time
 from datetime import datetime
 from pytz import timezone
-
-f = open("key.txt", 'r')
-while True:
-    line = f.readline()
-    if not line:
-        break
-    strParse = line.split(":")
-    if(strParse[0] == "access"):
-        access = strParse[1]
-    elif(strParse[0] == "secret"):
-        secret = strParse[1]
-f.close()
-
-#print(access)
-#print(secret)
-
-upbit = pyupbit.Upbit(access, secret)  # 업비트 객체를 만듭니다.
+import requests
+import json
 
 global rsi_pre_old
 global rsi_pre_old2
@@ -31,6 +16,43 @@ rsi_pre_old2 = 0
 trade = 'N'
 price_unit = 5000
 
+f = open("key.txt", 'r')
+while True:
+    line = f.readline()
+    if not line:
+        break
+    strParse = line.split("|")
+    if(strParse[0] == "access"):
+        access = strParse[1]
+    elif(strParse[0] == "secret"):
+        secret = strParse[1]
+    elif(strParse[0] == "token"):
+        token = strParse[1]
+    elif(strParse[0] == "chatid"):
+        chatid = strParse[1]
+f.close()
+
+#print(access)
+#print(secret)
+
+upbit = pyupbit.Upbit(access, secret)  # 업비트 객체를 만듭니다.
+
+def telegram_send(token, chatid, msg):
+    API_HOST = "https://api.telegram.org/bot"
+    url = API_HOST + token + '/sendmessage'
+    headers = {'Content-Type': 'application/json',
+               'charset': 'UTF-8', 'Accept': '*/*'}
+    body = {
+        "chat_id": chatid,
+        "text": msg
+    }
+
+    try:
+        response = requests.post(url, body)
+        print("response status %r" % response.status_code)
+        print("response text %r" % response.text)
+    except Exception as ex:
+        print(ex)
 
 def GetRSI(ohlcv, period):
     ohlcv["close"] = ohlcv["close"]
@@ -75,12 +97,15 @@ def getAmount(type):
     total = GetTotalRealMoney(upbit.get_balances())
     return round(total*type_ratio)
 
-
 def Monitor():
     global rsi_pre_old
     global rsi_pre_old2
     global trade
     global price_unit
+    
+    strSend = "%s,%f,%f"%("메시지", 1.2, 1.3)
+    telegram_send(token, chatid, strSend)
+    
     df = pyupbit.get_ohlcv("KRW-BTC", interval="minute1")
 
     rsi_pre_old2 = rsi_pre_old
@@ -102,18 +127,18 @@ def Monitor():
             sell_cnt = round(getAmount("SELL") / now_price, 8)
             print(upbit.sell_limit_order(
                 "KRW-BTC", now_price-price_unit, sell_cnt))
-            addString = "\tsell - golden cross!!!"
+            addString = "sell - golden cross!!!"
             trade = 'Y'
         elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N'):
             sell_cnt = round(getAmount("SELL") / now_price, 8)
             print(upbit.sell_limit_order(
                 "KRW-BTC", now_price-price_unit, sell_cnt))
-            addString = "\tsell - dead cross!!!"
+            addString = "sell - dead cross!!!"
             trade = 'Y'
         elif (rsi_pre >= 30 and rsi_pre_old < 30 and trade == 'N'):
             buy_cnt = round(getAmount("BUY") / now_price, 8)
             print(upbit.buy_limit_order("KRW-BTC", now_price+price_unit, buy_cnt))
-            addString = "\tbuy - golden cross!!!"
+            addString = "buy - golden cross!!!"
             trade = 'Y'
         rsi_pre_old = rsi_pre
         rsiChange = True
