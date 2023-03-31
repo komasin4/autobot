@@ -71,7 +71,7 @@ def GetTotalRealMoney(balances):
 
 
 def getAmount(type):
-    type_ratio = {"BUY": 0.1, "SELL": 0.05}.get(type, 0)
+    type_ratio = {"BUY": 0.05, "SELL": 0.05}.get(type, 0)
     total = GetTotalRealMoney(upbit.get_balances())
     return round(total*type_ratio)
 
