@@ -141,8 +141,8 @@ def Monitor():
     #strSend = "%s,%f,%f"%("메시지", 1.2, 1.3)
     #telegram_send(token, chatid, strSend)
     
-    #df = pyupbit.get_ohlcv("KRW-BTC", interval="minute3")
-    df = pyupbit.get_ohlcv("KRW-BTC", interval="minute1")
+    df = pyupbit.get_ohlcv("KRW-BTC", interval="minute3")
+    #df = pyupbit.get_ohlcv("KRW-BTC", interval="minute1")
 
     rsi_pre_old2 = rsi_pre_old
 
