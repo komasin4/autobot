@@ -130,6 +130,26 @@ def GetAmount(type, TotalRealMoney):
 def GetRevenue(TotalMoeny, TotalRealMoney):
     return (TotalRealMoney - TotalMoeny) * 100.0 / TotalMoeny
 
+def GetBTCRevenue(now_price, balances):
+    buyPrice = 0;
+    revenue = 0;
+    
+    for value in balances:
+        #print(value['currency'], value['balance'])
+        try:
+            ticker = value['currency']
+            if ticker == "BTC":  # 원화일 때는 평균 매입 단가가 0이므로 구분해서 총 평가금액을 구한다.
+                buyPrice = float(value['avg_buy_price'])
+                break
+        except Exception as e:
+            print("GetTotalRealMoney error:", e)
+            
+            
+    if(buyPrice > 0):
+        revenue = ((now_price-buyPrice)/buyPrice) * 100
+ 
+    return revenue
+
 def Monitor():
     global rsi_pre_old
     global rsi_pre_old2
@@ -159,7 +179,8 @@ def Monitor():
     balances = upbit.get_balances()
     TotalMoeny = GetTotalMoney(balances) #총 원금
     TotalRealMoney = GetTotalRealMoney(balances) #총 평가금액
-    TotalRevenue = GetRevenue(TotalMoeny, TotalRealMoney)
+    BTCRevenue = GetBTCRevenue(now_price, balances) #비트코인 수익율
+    #TotalRevenue = GetRevenue(TotalMoeny, TotalRealMoney)
     Krw = GetKRW(balances)
 
     if(rsi_pre_old != rsi_pre and rsi_pre_old > 0): #최초 실행시 (rsi_pre_old == 0) 일때 매매하지 않도록
@@ -169,13 +190,13 @@ def Monitor():
         cnt = 0
         order = 0
         
-        if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N' and TotalRevenue > 1): #수익율이 1% 이상일때만 매도
+        if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
             cnt = round(GetAmount("SELL", TotalRealMoney) / now_price, 8)
             order = now_price-price_unit
             print(upbit.sell_limit_order("KRW-BTC", order, cnt))
             addString = "sell - golden cross!!!"
             trade = 'Y'
-        elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N' and TotalRevenue > 1): #수익율이 1% 이상일때만 매도
+        elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
             cnt = round(GetAmount("SELL", TotalRealMoney) / now_price, 8)
             order = now_price-price_unit
             print(upbit.sell_limit_order("KRW-BTC",order, cnt))
@@ -204,7 +225,7 @@ def Monitor():
     if(rsiChange == True):
         print(datetime.now(timezone('Asia/Seoul')).strftime('%Y-%m-%d %H:%M:%S'),
               f"{rsi_pre_old2:.10f}", f"{rsi_pre:.10f}", f"{rsi_now: .10f}", now_price, 
-              '%d' % (TotalMoeny), '%d' % (TotalRealMoney), f"{TotalRevenue: .2f} ", '%d' % (int(float(Krw))), addString, flush=True)
+              '%d' % (TotalMoeny), '%d' % (TotalRealMoney), f"{BTCRevenue: .2f} ", '%d' % (int(float(Krw))), addString, flush=True)
             #rsi_pre_old2, ":", rsi_pre_old, "->", rsi_pre, "->", rsi_now, now_price, rsiChangeString, addString, flush=True)
 
 print("Start Bot at ", datetime.now(
