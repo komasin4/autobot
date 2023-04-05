@@ -166,9 +166,11 @@ def Monitor():
 
     rsi_pre_old2 = rsi_pre_old
 
-    #RSI14지표를 구합니다.
-    rsi_pre = float(GetRSI(df, 14).iloc[-2])
-    rsi_now = float(GetRSI(df, 14).iloc[-1])
+    #RSI 지표를 구합니다.
+    #rsi_pre = float(GetRSI(df, 14).iloc[-2])
+    #rsi_now = float(GetRSI(df, 14).iloc[-1])
+    rsi_pre = float(GetRSI(df, 9).iloc[-2])
+    rsi_now = float(GetRSI(df, 9).iloc[-1])
 
     addString = ""
     rsiChangeString = ""
