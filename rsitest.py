@@ -192,22 +192,24 @@ def Monitor():
         cnt = 0
         order = 0
         
-        if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
+#        if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
+        if (rsi_pre > 70 and rsi_pre_old <= 70 and trade == 'N'):
             cnt = round(GetAmount("SELL", TotalRealMoney) / now_price, 8)
             order = now_price-price_unit
-            print(upbit.sell_limit_order("KRW-BTC", order, cnt))
+            #print(upbit.sell_limit_order("KRW-BTC", order, cnt))
             addString = "sell - golden cross!!!"
             trade = 'Y'
-        elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
+#        elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N' and BTCRevenue > 1): #수익율이 1% 이상일때만 매도
+        elif (rsi_pre <= 70 and rsi_pre_old > 70 and trade == 'N'):
             cnt = round(GetAmount("SELL", TotalRealMoney) / now_price, 8)
             order = now_price-price_unit
-            print(upbit.sell_limit_order("KRW-BTC",order, cnt))
+            #print(upbit.sell_limit_order("KRW-BTC",order, cnt))
             addString = "sell - dead cross!!!"
             trade = 'Y'
         elif (rsi_pre >= 30 and rsi_pre_old < 30 and trade == 'N'):
             cnt = round(GetAmount("BUY", TotalRealMoney) / now_price, 8)
             order = now_price+price_unit
-            print(upbit.buy_limit_order("KRW-BTC", order, cnt))
+            #print(upbit.buy_limit_order("KRW-BTC", order, cnt))
             addString = "buy - golden cross!!!"
             trade = 'Y'
         if(trade == 'Y'):
